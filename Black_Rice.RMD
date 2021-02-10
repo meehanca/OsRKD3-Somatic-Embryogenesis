@@ -1,0 +1,480 @@
+---
+title: "TaRKD induced tillering"
+author: "Cathal Meehan"
+date: "03/04/2020"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+    toc: TRUE
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = F)
+```
+
+---
+# indTaRKD
+
+## Quality assessment of trimmed reads
+
+#### FastQC
+
+The reads were trimmed using fastp an ultra-fast all-in-one FASTQ preprocessor" and quality checked using FASTQC. All quality report plots were collated using MultiQC and plots were exported and visualised below. No irregularities were found in the trimmed reads so we continued to alignment.
+
+```{r, echo=FALSE, fig.cap="_**Figure 1A.**_ FastQC per sequence quality score plot", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/wheat multiqc/fastqc_per_sequence_quality_scores_plot.png")
+```
+
+```{r, echo=FALSE, fig.cap="_**Figure 1B.**_ FastQC per sequence quality score plot", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/wheat multiqc/fastqc_sequence_duplication_levels_plot.png")
+```
+
+```{r, echo=FALSE, fig.cap="_**Figure 1C.**_ FastQC per sequence quality score plot", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/wheat multiqc/fastqc_sequence_length_distribution_plot.png")
+```
+
+```{r, echo=FALSE, fig.cap="_**Figure 1D.**_ FastQC per sequence quality score plot", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/wheat multiqc/fastqc_per_sequence_quality_scores_plot.png")
+```
+
+#### Kallisto pseudoalignment
+
+Trimmed reads were mapped to the RefSeq v1.1 wheat genome using a pseudoaligner called kallisto. Kallisto is much faster than conventional mapping tools and has been shown to have equal or greater mapping efficiency because it skips the alignment step (exact position) and just focuses on mapping to the best match in a indexed cDNA library. Below is a graphic of the number of reads processed/aligned successfully.
+
+```{r, echo=FALSE, fig.cap="_**Figure 1E.**_ Read_processed plot", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Read_processed.png")
+```
+
+```{r, echo=FALSE, fig.cap="_**Figure 1F.**_ Percentage pseudoaligned plot", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Percentage pseudoaligned.png")
+```
+
+## DESeq2 normalisation and analysis of replicate quality
+
+#### indTaRKD dispersion plot - DESeq2 normalisation
+
+Counts were loaded into R and normalised using DESeq2. Below is a dispersion plot where we can see that counts were fitted to the trend of gene expression dispersion (variance). Outliers (bottom of the plot) are excluded from the analysis.
+
+```{r, echo=FALSE, fig.cap="_**Figure 2A.**_ Wheat dispersion plot", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Wheat dispersion plot.png")
+```
+
+#### Principal component analysis of normalised counts 
+
+Clear seperation of transgenic and non-transgenic samples along PC1 which accounts for 83% of gene expression dispersion (variance).
+
+```{r, echo=FALSE, fig.cap="_**Figure 2B.**_ indTaRKD PCA", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/PCA.png")
+```
+
+#### Scatter plots of replicates within conditions
+
+Scatterplots of normalised counts for genes. We can see good concordance between replicates suggesting good biological replication.
+
+```{r, echo=FALSE, fig.cap="_**Figure 2C.**_ indTaRKD replicate scatterplots", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Wheat replicates.png")
+```
+
+## DESeq2 analysis of expression profiles
+
+#### indTaRKD expression
+
+We could see a clear difference in indTaRKD expression across samples that we hypothesise is causative of the tillering phenotype.
+
+```{r, echo=FALSE, fig.cap="_**Figure 3A.**_ Normalised indTaRKD expression across sample", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/indTaRKD2.png")
+```
+
+#### Diffrential expression analysis
+
+DESeq2 calculated diffrentially expressed genes under the following criteria; lfcThreshold = 0.5, p.value = 0.05.
+
+```{r, echo=FALSE, fig.cap="_**Figure 3B.**_ indTaRKD DEG table", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+
+DE_indTaRKD_table <- read.delim('/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/indTaRKD T_vs_N table.txt')
+DE_indTaRKD_table
+```
+
+#### MA plots to see pattern of up/down regulation of normalised counts
+
+Equal amount of up and downregulation, consistent with this being 
+
+```{r, echo=FALSE, fig.cap="_**Figure 3C.**_ indTaRKD MA plot Transgenic vs Non-transgenic", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/MA_plot_T_vs_N.png")
+```
+
+#### Heatmap of diffrentially expressed library reads 
+
+Heatmap of logarithmically transformed normalised counts of indTaRKD libraries. We can see clear differences in upregulated and downregulated genes between samples
+
+```{r, echo=FALSE, fig.cap="_**Figure 3D.**_ indTaRKD DEGs Heatmaps", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/T_vs_N_DEGs_expression_across_samples.png")
+```
+
+## Enrichment of functional terms
+
+#### Transcription factor enrichment 
+
+Using a package called gage we tested for transcription factor enrichment. We used an enrichment strategy that takes normalised counts as an input as opposed to DEGs. This allows us to see more accurate enrichment of classes of transcription factors. One limitation of this strategy is that large transcription factor familes will not be enriched (plot below).
+
+```{r, echo=FALSE, fig.cap="_**Figure 4A.**_ Set size vs. enrichment rank", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+
+wheat_TFs <- read.delim("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/wheat_TF_gene_enrichment.txt")
+
+plot(1:58, wheat_TFs$set.size, ylab=c("Set size"),xlab=c("Rank in enrichment"))
+```
+
+
+```{r, echo=FALSE, fig.cap="_**Figure 4B.**_ indTaRKD Transcription factor enrichment", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+
+wheat_TFs <- read.delim("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/wheat_TF_gene_enrichment.txt")
+
+wheat_TFs[,c(3,4,5)]
+```
+
+Signficantly enriched transcription factors include processes like signalling and polymerase activity like CAMTA and Sigma70. Sigma70 TFs are involved in RNA polymerisation and are highly significanly upregulated in our indTaRKD DEGs. Additionally they're upregulated in our OsRKD and microspore datasets and have a predicted RKD motif in their promoter region. Other TFs that are consistent with this is E2F-DP which are involved in the G1/S transition. 
+
+C3H transcription factors are involved in photomorphogenesis early in embryogenesis. Consistent with this photosynthesis role is CO-like TFs have also been shown to be involved in flowering time. 
+
+The final point is that BES1 and tify transcription factors are involved in brassinosteroid and jasmonate response pathways that have been shown to be involved in tillering and regeneration. 
+
+All of this is suggests a transcriptional cascade that regulateds cell division and transcription which requires energy from photosynthesis. Two phytohormones involved in the tillering and regeneration context of RKD is Brassinosteroids and Jasmonate go onto explain our phenotype.
+
+```{r, echo=FALSE, fig.cap="_**Figure 4C.**_ Normalised TaDWF4 (BR synthesis) expression across samples.", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/TaDWF4 - Brassinosteroid synthesis.png")
+```
+
+#### Go term enrichment
+
+##### Over-representation
+
+To conduct a GO term analysis we took the RefSeq v1.0 GO terms list made available by Philippa Borrill and translated these to RefSeq v1.1 IDs (99% kept). Then we used the package TopGO to take compare GO term observed in our DEGs with the expected number. 
+
+The first plot shows enrichment of GO terms involved in energy production and cell division. Xanathine is invovled in purine metabolism and shows very high enrichment along with terms involved in sucrose transport and starch catabolism. Other interesting terms include brassinosteroid biosynthesis, response to wounding, defense response, cytokinin metabolic proccesses along with many photosynthesis related terms. 
+
+```{r, echo=FALSE, fig.cap="_**Figure 4D.**_ indTaRKD Top 50 enriched GO term wheat ratio", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Top 50 enriched GO term wheat ratio.png")
+```
+
+##### Under-representation
+
+The second plot shows depletion of GO-terms involved in ubiquitin mediated degredation, regulation of transcription, innate immune response and phosphorylation. Can't see any obvious trends from this other than perhaps a diversion of resources from immune related process to growth and development. Under-representation is usually not very relevant however...
+
+```{r, echo=FALSE, fig.cap="_**Figure 4E.**_ indTaRKD Top 50 depleted GO term wheat ratio", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Top 50 depleted GO term wheat ratio.png")
+```
+
+The two plots below GO term analysis using -log10(p-values). This gives a better idea of the most significant terms that are enriched/depleted
+
+```{r, echo=FALSE, fig.cap="_**Figure 4F.**_ indTaRKD Top40 enriched GO terms wheat -log10(p-value)", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Top40 enriched GO terms wheat -log10(p-value).png")
+```
+
+```{r, echo=FALSE, fig.cap="_**Figure 4G.**_ indTaRKD Top 40 depleted GO terms wheat -log10(p-value)", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Top 40 depleted GO terms wheat -log10(p-value).png")
+```
+
+#### Motif enrichment of 500bp upstream promoter sequences of upregulated DEGs
+
+500bp promoter sequences were extracted from the RefSeq v1.1 assembly using the R package GRanges. Upregulated DEG sequences were compared against a background group of randomly chosen genes and analysed using HOMER motif enrichment analysis using the findMotifs.pl fasta command. This generated a html output of the de-novo and known motifs detected.
+
+```{r, echo=FALSE, fig.cap="_**Figure 4H.**_ HOMER Known motif enrichment in 500bp upstream indTaRKD upregulated genes", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Known results wheat.png")
+```
+
+We see high enrichment of a MYB transcription factor motif. These TFs are usually involved in regulating cell division and diffrentiation. A high confidence candidate in our indTaRKD DEGs is a MYB TF that is upregulated in a microspore dataset we've analysed (described later) and has a predicted RKD motif in its promoter region. The 5th motif is a Phytoclock1 related motif consistent with many downstream targets having roles in photomorphogenesis.
+
+```{r, echo=FALSE, fig.cap="_**Figure 4I.**_ Normalised MYB10 expression across samples", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/MYB10.png")
+```
+
+```{r, echo=FALSE, fig.cap="_**Figure 4J.**_ Normalised PCL1 triad expression across samples", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/PCL1.png")
+```
+
+
+```{r, echo=FALSE, fig.cap="_**Figure 4K.**_ HOMER de-novo motif enrichment in 500bp upstream indTaRKD upregulated genes", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Wheat de novo.png")
+```
+
+The only de-novo motif that crosses the e-12 threshold (the cut-off for not risking false positives) is an AP2-ERF motif. These transcription factors have been implicated in regeneration and response to abiotic stress. There is an AP2-ERF significantly upregulated in the both the OsRKD and indTaRKD DEGs (ERF113) that has an RKD-motif in the rice homolog. Additionally this AP2-ERF has been shown to play a role in wound response and regeneration in the literature.
+
+```{r, echo=FALSE, fig.cap="_**Figure 4L.**_ Normalised expression of ERF113 (DEG) and its homeolog ERF115 across samples (non-DEG)", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/AP2-ERF.png")
+```
+
+# Microspore 
+
+## Experimental design
+
+This study took the bulgarian winter wheat 'Svilena' which is known for its high regenerative properties and took three tissue samples; untreated microspores (non-dividing), pretreated (cold stress - non-dividing) and treated (dividing) microspores. We decided to analyse this dataset as it had not been done with the RefSeq assembly and it would provide a novel insight into early embryogenesis in wheat.
+
+## DESeq2 normalisation and analysis of replicate quality
+
+#### indTaRKD dispersion plot - DESeq2 normalisation
+
+Counts were loaded into R and normalised using DESeq2. Below is a dispersion plot where we can see that counts were fitted to the trend of gene expression dispersion (variance). Outliers (bottom of the plot) are excluded from the analysis.
+
+```{r, echo=FALSE, fig.cap="_**Figure 5A.**_ Microspore dispersion plot", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Dispersion plot microspore.png")
+```
+
+#### Principal component analysis of normalised counts 
+
+Clear seperation of transgenic and non-transgenic samples along PC1 which accounts for 94% of gene expression dispersion (variance).
+
+```{r, echo=FALSE, fig.cap="_**Figure 5B.**_ Microspore PCA", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/PCA microspore.png")
+```
+
+#### Diffrential expression analysis
+
+DESeq2 calculated diffrentially expressed genes under the following criteria; lfcThreshold = 2, p.value = 0.01.
+
+```{r, echo=FALSE, fig.cap="_**Figure 5C.**_ Microspore treated vs untreated DEG table", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+
+DE_indTaRKD_table <- read.delim('/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Treated_untreated_DEG.txt')
+DE_indTaRKD_table
+```
+
+```{r, echo=FALSE, fig.cap="_**Figure 5D.**_ Microspore treated vs pretreated DEG table", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+
+DE_indTaRKD_table <- read.delim('/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Treated pretreated DEGs.txt')
+DE_indTaRKD_table
+```
+
+```{r, echo=FALSE, fig.cap="_**Figure 5E.**_ Microspore Shared DEG table", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+
+DE_indTaRKD_table <- read.delim('/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Shared_DEGs microspore.txt')
+DE_indTaRKD_table
+```
+
+#### Venn diagram of OsRKD DEGs
+
+Equal amount of up and downregulation, consistent with this being 
+
+```{r, echo=FALSE, fig.cap="_**Figure 5F.**_ Venn diagram of Microspore DEGs", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Venn diagram microspore.png")
+```
+
+#### Heatmap of diffrentially expressed library reads 
+
+Heatmap of logarithmically transformed normalised counts of microspore libraries. We can see clear differences in upregulated and downregulated genes between indOsRKD expressing and non-expressing samples
+
+```{r, echo=FALSE, fig.cap="_**Figure 5G.**_ Shared Microspore DEGs Heatmaps", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Shared_microspore_DEGs.png")
+```
+
+## Enrichment of functional terms
+
+#### Transcription factor enrichment 
+
+Using a package called gage we tested for transcription factor enrichment. We used an enrichment strategy that takes normalised counts as an input as opposed to DEGs. This allows us to see more accurate enrichment of classes of transcription factors. One limitation of this strategy is that large transcription factor familes will not be enriched (plot below).
+
+```{r, echo=FALSE, fig.cap="_**Figure 6A.**_ indTaRKD Transcription factor enrichment", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+
+wheat_TFs <- read.delim("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/TF_microspore_gene_enrichment.txt")
+
+plot(1:58, wheat_TFs$set.size, ylab=c("Set size"),xlab=c("Rank in enrichment"))
+
+wheat_TFs[,c(3,4,5)]
+```
+
+Similar TF enrichment to indTaRKD with C3H, CAMTA, E2F, and TUB playing roles. The big noteable difference being ARF transcription factors which is consistent with microspore induction (the first division) being highly dependent on auxin.
+
+#### Go term enrichment
+
+##### Over-representation
+
+To conduct a GO term analysis we took the RefSeq v1.0 GO terms list made available by Philippa Borrill and translated these to RefSeq v1.1 IDs (99% kept). Then we used the package TopGO to take compare GO term observed in our DEGs with the expected number. 
+
+Jasmonate response appears in enriched GO terms but brassinosteroid does not. This suggests that brassinosteroid isn't the target of RKD (a zygotic factor) but that jasmonate could be.
+
+```{r, echo=FALSE, fig.cap="_**Figure 6B.**_ Microspore Top 50 enriched GO term wheat ratio", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Top50 over-represented microspore GO term analysis 0.05.png")
+```
+
+```{r, echo=FALSE, fig.cap="_**Figure 6C.**_ Microspore Top 50 depleted GO term wheat ratio", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Top50 under-represented microspore GO term analysis 0.05.png")
+```
+
+#### Motif enrichment of 500bp upstream promoter sequences of upregulated DEGs
+
+500bp promoter sequences were extracted from the RefSeq v1.1 assembly using the R package GRanges. Upregulated DEG sequences were compared against a background group of randomly chosen genes and analysed using HOMER motif enrichment analysis using the findMotifs.pl fasta command. This generated a html output of the de-novo and known motifs detected.
+
+```{r, echo=FALSE, fig.cap="_**Figure 6D.**_ HOMER Known motif enrichment in 500bp upstream indTaRKD upregulated genes", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Known motif results.png")
+```
+
+There is a high enrichment of MYB transcription factor motifs and no de-novo enriched motifs.
+
+# indOsRKD
+
+## DESeq2 normalisation and analysis of replicate quality
+
+#### indOsRKD dispersion plot - DESeq2 normalisation
+
+Counts were loaded into R and normalised using DESeq2. Below is a dispersion plot where we can see that counts were fitted to the trend of gene expression dispersion (variance). Outliers (bottom of the plot) are excluded from the analysis.
+
+```{r, echo=FALSE, fig.cap="_**Figure 7A.**_ indOsRKD dispersion plot", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/rice dispersion plot.png")
+```
+
+#### Principal component analysis of normalised counts 
+
+Clear seperation of OsRKD induced samples along PC1 which accounts for 92% of gene expression dispersion (variance). Slight seperation of samples according to genotype along PC2 (~2%).
+
+```{r, echo=FALSE, fig.cap="_**Figure 7B.**_ indTaRKD PCA", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/PCA rice.png")
+```
+
+## DESeq2 analysis of expression profiles
+
+#### indOsRKD expression
+
+We could see a clear difference in indTaRKD expression across samples that we hypothesise is causative of the tillering phenotype.
+
+```{r, echo=FALSE, fig.cap="_**Figure 8A.**_ Normalised indTaRKD expression across sample", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/indTaRKD2.png")
+```
+
+#### Diffrential expression analysis
+
+DESeq2 calculated diffrentially expressed genes under the following criteria; lfcThreshold = 1, p.value = 0.05.
+
+```{r, echo=FALSE, fig.cap="_**Figure 8B.**_ indOsRKD TD vs ND DEG table", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+
+DE_indTaRKD_table <- read.delim('/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/indOsRKD_TD_ND.txt')
+DE_indTaRKD_table
+```
+
+```{r, echo=FALSE, fig.cap="_**Figure 8C.**_ indOsRKD TD vs TM DEG table", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+
+DE_indTaRKD_table <- read.delim('/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/indOsRKD_TD_TM_table.txt')
+DE_indTaRKD_table
+```
+
+```{r, echo=FALSE, fig.cap="_**Figure 8D.**_ indOsRKD Shared DEG table", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+
+DE_indTaRKD_table <- read.delim('/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Shared_DEGs.txt')
+DE_indTaRKD_table
+```
+
+#### Venn diagram of OsRKD DEGs
+
+Equal amount of up and downregulation, consistent with this being 
+
+```{r, echo=FALSE, fig.cap="_**Figure 8E.**_ Venn diagram of OsRKD DEGs", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Venn_rice.png")
+```
+
+#### Heatmap of diffrentially expressed library reads 
+
+Heatmap of logarithmically transformed normalised counts of indOsRKD libraries. We can see clear differences in upregulated and downregulated genes between indOsRKD expressing and non-expressing samples
+
+```{r, echo=FALSE, fig.cap="_**Figure 8F.**_ indOsRKD DEGs Heatmaps", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Shared_DEGs_rice.png")
+```
+
+## Enrichment of functional terms
+
+#### Transcription factor enrichment 
+
+Using a package called gage we tested for transcription factor enrichment. We used an enrichment strategy that takes normalised counts as an input as opposed to DEGs. This allows us to see more accurate enrichment of classes of transcription factors. One limitation of this strategy is that large transcription factor familes will not be enriched (plot below).
+
+```{r, echo=FALSE, fig.cap="_**Figure 9A.**_ Set size vs. enrichment rank", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+
+Rice_TFs <- read.delim("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Rice _TF_gene_enrichment.txt")
+
+Rice_TFs[,c(3,4,5)]
+```
+
+#### Go term enrichment
+
+To conduct a GO term analysis we took GoSlim terms from the MSU database and plotted significant values similar to before. 
+
+##### Over-representation
+
+```{r, echo=FALSE, fig.cap="_**Figure 9B.**_ Top 10 enriched GOSlim rice ratio", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Top 10 enriched GOSlim rice ratio.png")
+```
+
+We see a high enrichment of GOslim terms related to photosynthesis, energy related metabolic processes and response to abiotic stress. 
+
+##### Under-representation
+
+```{r, echo=FALSE, fig.cap="_**Figure 9C.**_ Top 10 depleted GOSlim rice ratio", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Top10 depleted GOSlim rice.png")
+```
+
+#### Motif enrichment of 1000bp upstream promoter sequences of upregulated DEGs
+
+1000bp upstream promoter sequences were taken from the RAP-DB database. Upregulated Shared DEG (p.value < 0.01, lfcThreshold > 1 - 618 DEGs) sequences were compared against a background group of randomly chosen genes and analysed using HOMER motif enrichment analysis using the findMotifs.pl fasta command. This generated a html output of the de-novo and known motifs detected.
+
+```{r, echo=FALSE, fig.cap="_**Figure 9D.**_ HOMER Known motif enrichment in 500bp upstream indOsRKD upregulated genes", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Homer_deNovo_Rice.png")
+```
+
+The only de-novo motif that crosses the e-12 threshold (the cut-off for not risking false positives) is an AP2-ERF motif. These transcription factors have been implicated in regeneration and response to abiotic stress. There is an AP2-ERF significantly upregulated in the both the OsRKD and indTaRKD DEGs (ERF113) that has an RKD-motif in the rice homolog. Its expression is brassinosteroid induced. Additionally this AP2-ERF has been shown to play a role in wound response and regeneration in the literature.
+
+```{r, echo=FALSE, fig.cap="_**Figure 9E.**_ HOMER Known motif enrichment in 500bp upstream indOsRKD upregulated genes", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Rice_Known_motif_1.png")
+```
+
+```{r, echo=FALSE, fig.cap="_**Figure 9F.**_ HOMER Known motif enrichment in 500bp upstream indOsRKD upregulated genes", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/Rice_Known_motif_3.png")
+```
+
+In the known motifs there is a high enrichment of WRKY, MYB and AP2-ERF transcription factors. Of particular interest is the enrichment of ERF115, a homolog to the ERF113 homeolog that controls root QC cell division and stem cell niche replenishment. All of this once again points to a role of ERFs regulating regeneration and meristem initiation/maintenance which is consistent with our hypothesis for RKD-induced tillering
+
+## Cytoscape network construction
+
+We found a number of candidates that could explain our tillering phenotype but we felt we were missing an overall picture of how indTaRKD expression was leading to our phenotype of interest. To address this we decided to construct a coexpression network. 
+
+Due to poor functional annotation in wheat and lacking an easily accessible coexpression table we decided to construct our RKD network in rice using the OsRKD DEGs as a template. Below is a brief description of the analysis and how the coexpression network was constructed.
+
+In order to construct a coexpression network, we took a high confidence coexpression table produced by the netminer algorithm. From we only took the interactions that had an OsRKD DEG (lfcThreshold=1, p.value = 0.05) with over 0.15 weighted coexpression correlation. From this we loaded the table into cytoscape and layed it out using a prefuse force directed layout. We manually curated clusters and did enrichment tests for GO terms and 1000bp promoter motifs. An image is presented below but additional network options can be visualised using the search terms below in nDEX.
+
+```{r, echo=FALSE, fig.cap="_**Figure 10A.**_ Normalised expression of ERF113 (DEG) and its homeolog ERF115 across samples (non-DEG)", out.width = '50%', eval = T, fig.align='center', fig.show='hold'}
+knitr::include_graphics("/Users/u1762824/Documents/R scripts and projects/Projects/RKD_grasses/analysis/OsRKD_highlighted.png")
+```
+
+DEGs network options - "OsRKD OsRKD DEGs", "OsRKD TaRKD DEGs", "OsRKD Microspore DEGs", "OsRKD Tillering DEGs", "OsRKD NGR5 DEGs" 
+
+GeneNet network options - "OsRKD TaRKD geneNet 0.15", "OsRKD Microspore geneNet 0.15", "OsRKD Tillering geneNet 0.15", "OsRKD NGR5 geneNet 0.15"
+
+Tissue expression options - "OsRKD Pre-emergence inflorescence", "OsRKD Post-emergence inflorescence", "OsRKD Anther", "OsRKD Pistil", "OsRKD Embryo 25 DAP", "OsRKD Endosperm 25 DAP", "OsRKD Seed 5 DAP", "OsRKD Seed 10 DAP", "OsRKD Leaves 20 days", "OsRKD Seedling 4 leaf stage", "OsRKD Shoots 25 DAP"
+
+### Functional term enrichment results for clusters
+
+#### Photoinhibition cluster
+ 
+De-novo: MYBS2 and methionine biosynthetic genes
+
+Known: MYB related and ERF 
+
+#### Jasmonate cluster
+
+De-novo: CAMTA and RRM 
+
+Known: CAMTA, WRKY and RKD2
+
+In general very high number of motifs compared to other cluster. This suggest is the main transcriptional regulatory cluster of the network
+
+#### Signal transduction
+
+De-novo: none
+
+Known: E2F, CAMTA and MADS
+
+#### Brassinosteroid
+
+De-novo: Highly signficant squamosa like promoter (SPL11)
+
+Known: MYB and P53 like
+
+# Final note
+
+There seems to be two major processes being detected in the transcriptional networks related to RKD expression in the grasses. The first regulates transcription and cell division which is consistent with RKDs role as a regulator of early embryonic development and would be dependent on MYB and Sigma70 factors implicated in the network. The second may explain RKD induced tillering and seems to be dependent on AP2-ERF factors and how they influence phytohormone biosynthesis that increases formation of axillary meristems. This is particularly related to the phytohormone jasmonate which has been shown to play a role in regeneration and response to wounding. 
